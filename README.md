@@ -1,6 +1,6 @@
 # Unpublished V2.5 ingredient reference refresh
 
-**Prepared, not activated.** The owner approved and the automation-only repository is now public. Actions remains disabled pending dedicated Theme Access credential entry and hosted verification. There are no Shopify credentials in this repository.
+**Prepared, not activated.** The owner approved and the automation-only repository is now public. The dedicated environment secret is present. Hosted verification is blocked at Shopify CLI theme listing, so Actions is disabled and the Mac-based schedule remains active until successful verification. There are no Shopify credentials in this repository.
 
 This standalone repository does not build, deploy or publish the website or Studio. It only maintains the existing public ingredient-reference snapshot in Shopify theme **204653822279**, provided that its role is still **unpublished**. Geisha, quote-only products, form selections, formulas, uploads and quote routing remain unchanged.
 
