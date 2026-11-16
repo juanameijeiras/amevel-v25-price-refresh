@@ -1,0 +1,1 @@
+{"name":"amevel-v25-price-refresh","private":true,"type":"module","scripts":{"test":"node --test test/*.test.mjs","refresh":"node scripts/hosted-refresh.mjs"},"devDependencies":{"@shopify/cli":"5.0.1"},"engines":{"node":">=22.12"}}

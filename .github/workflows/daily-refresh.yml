@@ -1,0 +1,39 @@
+name: Refresh unpublished V2.5 ingredient references
+on:
+  schedule:
+    - cron: '17 6 * * *'
+      timezone: America/New_York
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: v25-ingredient-reference-refresh
+  cancel-in-progress: false
+jobs:
+  refresh:
+    if: github.ref == 'refs/heads/main' && github.repository == 'juanameijeiras/amevel-v25-price-refresh'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    environment: v25-refresh
+    steps:
+      - name: Check out trusted main
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Set up Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.17.0'
+      - name: Install pinned CLI without install scripts
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Verify guards and calculations
+        run: npm test
+      - name: Refresh only the unpublished V2.5 snapshot
+        run: npm run refresh
+        env:
+          SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+          SHOPIFY_CLI_NO_ANALYTICS: '1'
+          OPT_OUT_INSTRUMENTATION: 'true'
+# No push/PR trigger, preview deployment, artifact upload or Actions cache.
+# Enable Actions only after public-code approval, encrypted theme access, and a $0 hard budget.
