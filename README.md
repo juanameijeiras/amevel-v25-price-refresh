@@ -1,12 +1,12 @@
 # Unpublished V2.5 ingredient reference refresh
 
-**Prepared, not activated.** The owner approved and the automation-only repository is now public. The dedicated environment secret is present. Hosted verification is blocked at Shopify CLI theme listing, so Actions is disabled and the Mac-based schedule remains active until successful verification. There are no Shopify credentials in this repository.
+**Active and verified.** The automation-only repository is public, Actions is enabled, and the dedicated encrypted secret is restricted to the `v25-refresh` environment on `main`. Hosted run [43954495743](https://github.com/juanameijeiras/amevel-v25-price-refresh/actions/runs/43954495743) passed on November 16, 2026, including an identical-content write, encrypted backup and exact readback. V2.5 stayed unpublished. The previous Mac-based schedule is paused. No credentials are committed to this repository.
 
 This standalone repository does not build, deploy or publish the website or Studio. It only maintains the existing public ingredient-reference snapshot in Shopify theme **204653822279**, provided that its role is still **unpublished**. Geisha, quote-only products, form selections, formulas, uploads and quote routing remain unchanged.
 
 ## Daily behavior
 
-The prepared workflow runs around **06:17 America/New_York**, away from the hourly rush. GitHub schedules can be delayed; this is not an exact-time SLA. Valid stored prices remain visible while the background run checks sources. Four dairy references, three cocoa references and Classic's shared coffee reference are checked once through the existing daily cache. Changed references are written to **one file only**:
+The workflow runs around **06:17 America/New_York**, away from the hourly rush. GitHub schedules can be delayed; this is not an exact-time SLA. Valid stored prices remain visible while the background run checks sources. Four dairy references, three cocoa references and Classic's shared coffee reference are checked once through the existing daily cache. Changed references are written to **one file only**:
 
 `snippets/amevel-v25-ingredient-stored-reference.liquid`
 
@@ -14,7 +14,7 @@ There is no browser dependency. A successful no-op makes no Shopify write. Faile
 
 ## Zero added cost
 
-The owner's private-repository free compute allowance was already exhausted during setup. Therefore this runner **refuses private repository execution**. Standard public Linux Actions runners are free independently of that allowance. Public-code approval was received on November 16, 2026. A repository-specific **$0 hard Actions budget** is configured, and Actions remains disabled until setup is verified.
+The owner's private-repository free compute allowance was already exhausted during setup. Therefore this runner **refuses private repository execution**. Standard public Linux Actions runners are free independently of that allowance. Public-code approval was received on November 16, 2026. A repository-specific **$0 hard Actions budget** is configured, and the hosted runner uses free public Linux compute.
 
 No Actions artifact upload or cache is used. Encrypted recovery files are stored as small Git commits; backups cannot trigger this schedule recursively. No paid service or plan upgrade is needed. If any zero-cost assumption cannot be verified, keep the job disabled.
 
@@ -50,4 +50,4 @@ The list/pull operations read metadata and theme code. The push sends only the g
 
 ## Verification and activation
 
-Run `npm test` locally. It uses synthetic fixtures and performs no Shopify authentication or writes. Complete credential setup, public-code approval and zero-spend verification, then enable Actions and run the workflow manually once. Its optional verify_write input performs a guarded identical-content write when today’s reference is already current, allowing write access and exact readback to be verified without changing prices. Scheduled runs never enable this input. Verify exact remote content and UNPUBLISHED status before treating the hosted schedule as active. Leave this README's prepared status until those hosted checks pass.
+Run `npm test` locally. It uses synthetic fixtures and performs no Shopify authentication or writes. Complete credential setup, public-code approval and zero-spend verification, then enable Actions and run the workflow manually once. Its optional verify_write input performs a guarded identical-content write when today’s reference is already current, allowing write access and exact readback to be verified without changing prices. Scheduled runs never enable this input. Verify exact remote content and UNPUBLISHED status before treating the hosted schedule as active. Hosted checks passed; the first scheduled daily run is still a future execution, not yet observed.
