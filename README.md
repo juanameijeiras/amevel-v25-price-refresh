@@ -50,4 +50,4 @@ The list/pull operations read metadata and theme code. The push sends only the g
 
 ## Verification and activation
 
-Run `npm test` locally. It uses synthetic fixtures and performs no Shopify authentication or writes. Complete credential setup, public-code approval and zero-spend verification, then enable Actions and run the workflow manually once. Verify exact remote content and UNPUBLISHED status before treating the hosted schedule as active. Leave this README's prepared status until those hosted checks pass.
+Run `npm test` locally. It uses synthetic fixtures and performs no Shopify authentication or writes. Complete credential setup, public-code approval and zero-spend verification, then enable Actions and run the workflow manually once. Its optional verify_write input performs a guarded identical-content write when today’s reference is already current, allowing write access and exact readback to be verified without changing prices. Scheduled runs never enable this input. Verify exact remote content and UNPUBLISHED status before treating the hosted schedule as active. Leave this README's prepared status until those hosted checks pass.
