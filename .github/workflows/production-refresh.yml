@@ -44,7 +44,7 @@ jobs:
           V25_REFRESH_MODE: production
           V25_PRODUCTION_REFRESH_ENABLED: ${{ vars.V25_PRODUCTION_REFRESH_ENABLED }}
           V25_EXPECTED_THEME_ID: '204653822279'
-          V25_PRODUCTION_PRICING_HOST: 'https://pricing.amevel.com'
+          V25_PRODUCTION_PRICING_HOST: 'https://amevel-pricing.vercel.app'
           VERIFY_WRITE: ${{ github.event.inputs.verify_write || 'false' }}
 # No push/PR trigger, preview deployment, artifact upload or Actions cache.
 # Enable Actions only after public-code approval, encrypted theme access, and a $0 hard budget.

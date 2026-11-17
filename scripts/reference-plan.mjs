@@ -5,8 +5,8 @@ import {createHash} from 'node:crypto';
 
 export const THEME='gid://shopify/OnlineStoreTheme/204653822279';
 export const SNAPSHOT='snippets/amevel-v25-ingredient-stored-reference.liquid';
-export const HOST='https://amevel-configurator-ba5bhz0sm-juan-ameijeiras-projects.vercel.app';
-export const PRODUCTION_HOST='https://pricing.amevel.com';
+export const HOST='https://amevel-pricing.vercel.app';
+export const PRODUCTION_HOST=HOST;
 export function releasePolicy(env={}){
  if(!env.V25_REFRESH_MODE&&(env.V25_PRODUCTION_REFRESH_ENABLED||env.V25_EXPECTED_THEME_ID||env.V25_PRODUCTION_PRICING_HOST))throw Error('Production refresh mode must be explicit');
  if(!env.V25_REFRESH_MODE || env.V25_REFRESH_MODE==='preview')return{role:'UNPUBLISHED',cliRole:'unpublished',host:HOST,production:false};
