@@ -1,4 +1,4 @@
-name: Refresh unpublished V2.5 ingredient references
+name: Refresh V2.5 ingredient references
 on:
   schedule:
     - cron: '17 6 * * *'
@@ -34,7 +34,7 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Verify guards and calculations
         run: npm test
-      - name: Refresh only the unpublished V2.5 snapshot
+      - name: Refresh only the exact V2.5 reference snapshot
         run: npm run refresh
         env:
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
