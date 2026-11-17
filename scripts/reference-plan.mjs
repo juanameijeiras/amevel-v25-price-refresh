@@ -5,7 +5,14 @@ import {createHash} from 'node:crypto';
 
 export const THEME='gid://shopify/OnlineStoreTheme/204653822279';
 export const SNAPSHOT='snippets/amevel-v25-ingredient-stored-reference.liquid';
-export const HOST='https://amevel-configurator-ba5bhz0sm-juan-ameijeiras-projects.vercel.app';
+export const HOST='https://amevel-pricing.vercel.app';
+export const PRODUCTION_HOST=HOST;
+export function releasePolicy(env={}){
+ if(!env.V25_REFRESH_MODE&&(env.V25_PRODUCTION_REFRESH_ENABLED||env.V25_EXPECTED_THEME_ID||env.V25_PRODUCTION_PRICING_HOST))throw Error('Production refresh mode must be explicit');
+ if(!env.V25_REFRESH_MODE || env.V25_REFRESH_MODE==='preview')return{role:'UNPUBLISHED',cliRole:'unpublished',host:HOST,production:false};
+ if(env.V25_REFRESH_MODE!=='production'||env.V25_PRODUCTION_REFRESH_ENABLED!=='true'||env.V25_EXPECTED_THEME_ID!=='204653822279'||env.V25_PRODUCTION_PRICING_HOST!==PRODUCTION_HOST)throw Error('Production refresh is not explicitly armed for V2.5');
+ return{role:'MAIN',cliRole:'live',host:PRODUCTION_HOST,production:true};
+}
 export const REFERENCES=[['dairy','whole-milk'],['dairy','skim-milk'],['dairy','whey-powder'],['dairy','amf'],['cocoa-index','terranova-cocoa-powder'],['cocoa-index','evergrove-cocoa-powder'],['cocoa-index','sunridge-cocoa-powder'],['coffee','arabica-classic']];
 const DAY=86400000,sha=x=>createHash('sha256').update(x).digest('hex');
 const integer=n=>Number.isSafeInteger(n)&&n>0;
@@ -15,7 +22,7 @@ const dayOf=d=>d.toISOString().slice(0,10);
 const midnight=d=>Date.parse(dayOf(d)+'T00:00:00Z');
 const dayDate=s=>{if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s))throw Error('invalid source date');const t=Date.parse(s+'T00:00:00Z');if(!Number.isFinite(t)||dayOf(new Date(t))!==s)throw Error('invalid source date');return t;};
 const assert=(yes,why)=>{if(!yes)throw Error(why);};
-export function ensureTheme(theme){assert(theme?.id===THEME&&theme.role==='UNPUBLISHED','Only unpublished V2.5 may be refreshed');assert(Array.isArray(theme.files?.nodes),'Missing fresh remote files');}
+export function ensureTheme(theme,policy=releasePolicy()){assert(theme?.id===THEME&&theme.role===policy.role,'Only the exact V2.5 theme in the authorized role may be refreshed');assert(Array.isArray(theme.files?.nodes),'Missing fresh remote files');}
 export function validateReference(family,product,data,now){
  assert(data?.product===product&&data.currency==='USD'&&data.packKg===1&&data.bags===1,'Mismatched reference identity or units');
  const checked=Date.parse(data.referenceCheckedAt);assert(Number.isFinite(checked)&&checked<=now.getTime()+60000&&dayOf(new Date(checked))===dayOf(now),'Reference was not checked today');
@@ -45,8 +52,8 @@ export function validateReference(family,product,data,now){
  return{checked:Math.floor(checked/1000),validUntil:Math.floor(validUntil/1000),low,high};
 }
 const canonical=d=>JSON.stringify(Object.fromEntries(Object.entries(d).filter(([k])=>k!=='expiresAt').sort(([a],[b])=>a.localeCompare(b))));
-export function planRefresh(theme,responses,now=new Date()){
- ensureTheme(theme);const file=theme.files.nodes.find(x=>x.filename===SNAPSHOT);assert(typeof file?.body?.content==='string','Missing stored-reference snippet');
+export function planRefresh(theme,responses,now=new Date(),policy=releasePolicy()){
+ ensureTheme(theme,policy);const file=theme.files.nodes.find(x=>x.filename===SNAPSHOT);assert(typeof file?.body?.content==='string','Missing stored-reference snippet');
  const before=file.body.content;assert(before.includes('theme.id == 204653822279')&&before.includes('reference_age <= 172800'),'Snapshot guards changed; review required');
  const keys=[...before.matchAll(/{% when '([^']+)' %}/g)].map(x=>x[1]);assert(JSON.stringify(keys)===JSON.stringify(REFERENCES.map(x=>x.join(':'))),'Reference inventory changed; review required');
  let after=before;const updated=[],retained=[],unchanged=[];
@@ -66,11 +73,11 @@ export function planRefresh(theme,responses,now=new Date()){
  }
  return{themeId:THEME,filename:SNAPSHOT,checkedAt:now.toISOString(),beforeSha256:sha(before),afterSha256:sha(after),changed:after!==before,updated,unchanged,retained,body:after};
 }
-export async function fetchReferences(theme,fetcher=fetch){
- ensureTheme(theme);
- for(const family of ['dairy','coffee','cocoa-index']){const f=theme.files.nodes.find(x=>x.filename==='snippets/amevel-v25-'+(family==='dairy'?'dairy-pricing':family==='coffee'?'coffee-pricing':'cocoa-index')+'.liquid');assert(f?.body.content.includes('data-endpoint="'+HOST+'/api/pricing/'+family+'"'),'Preview endpoint changed; review required');}
+export async function fetchReferences(theme,fetcher=fetch,policy=releasePolicy()){
+ ensureTheme(theme,policy);
+ for(const family of ['dairy','coffee','cocoa-index']){const f=theme.files.nodes.find(x=>x.filename==='snippets/amevel-v25-'+(family==='dairy'?'dairy-pricing':family==='coffee'?'coffee-pricing':'cocoa-index')+'.liquid');assert(f?.body.content.includes('data-endpoint="'+policy.host+'/api/pricing/'+family+'"'),'Preview endpoint changed; review required');}
  const responses={};for(const [family,product]of REFERENCES){const key=family+':'+product;try{
-  const response=await fetcher(HOST+'/api/pricing/'+family,{method:'POST',headers:{Origin:'https://amevel.com','Content-Type':'application/json'},body:JSON.stringify({themeId:'204653822279',product,packKg:1,bags:1}),signal:AbortSignal.timeout(35000)});
+  const response=await fetcher(policy.host+'/api/pricing/'+family,{method:'POST',headers:{Origin:'https://amevel.com','Content-Type':'application/json'},body:JSON.stringify({themeId:'204653822279',product,packKg:1,bags:1}),signal:AbortSignal.timeout(35000)});
   assert(response.ok,'Pricing HTTP '+response.status);responses[key]=await response.json();
  }catch(error){responses[key]={error:String(error.message)}}}return responses;
 }
