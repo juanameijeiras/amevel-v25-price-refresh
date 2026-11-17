@@ -1,8 +1,8 @@
-# Unpublished V2.5 ingredient reference refresh
+# V2.5 ingredient reference refresh
 
 **Active and verified.** The automation-only repository is public, Actions is enabled, and the dedicated encrypted secret is restricted to the `v25-refresh` environment on `main`. Hosted run [43954495743](https://github.com/juanameijeiras/amevel-v25-price-refresh/actions/runs/43954495743) passed on November 16, 2026, including an identical-content write, encrypted backup and exact readback. V2.5 stayed unpublished. The previous Mac-based schedule is paused. No credentials are committed to this repository.
 
-This standalone repository does not build, deploy or publish the website or Studio. It only maintains the existing public ingredient-reference snapshot in Shopify theme **204653822279**, provided that its role is still **unpublished**. Geisha, quote-only products, form selections, formulas, uploads and quote routing remain unchanged.
+This standalone repository does not build, deploy or publish the website or Studio. It only maintains the existing public ingredient-reference snapshot in Shopify theme **204653822279**, whether its role is **unpublished** or **published**, using the same exact theme ID. Geisha, quote-only products, form selections, formulas, uploads and quote routing remain unchanged.
 
 ## Daily behavior
 
@@ -10,7 +10,7 @@ The workflow runs around **06:17 America/New_York**, away from the hourly rush. 
 
 `snippets/amevel-v25-ingredient-stored-reference.liquid`
 
-There is no browser dependency. A successful no-op makes no Shopify write. Failed references keep their old values and real checked dates. Existing source-age and 48-hour display limits remain enforced. Total failure, unsupported source/formula changes, publication, concurrent edits or readback mismatches fail the run and preserve recovery evidence. There is no quote submission or customer-file upload.
+There is no browser dependency. A successful no-op makes no Shopify write. Failed references keep their old values and real checked dates. Existing source-age and 48-hour display limits remain enforced. Total failure, unsupported source/formula changes, a mid-run role change, concurrent edits or readback mismatches fail the run and preserve recovery evidence. There is no quote submission or customer-file upload.
 
 ## Zero added cost
 
@@ -46,8 +46,14 @@ shopify theme pull --store y1cgpx-ke.myshopify.com --no-input --json --theme 204
 shopify theme push --store y1cgpx-ke.myshopify.com --no-input --json --theme 204653822279 --path RUNTIME_DIR --nodelete --only snippets/amevel-v25-ingredient-stored-reference.liquid
 ```
 
-The list/pull operations read metadata and theme code. The push sends only the generated snapshot to that unpublished theme. The read-only layout file gives the staging directory valid theme structure; it is not included in the push filter. Neither `--publish`, `--live`, `--allow-live`, theme deletion nor another theme ID can be selected. The role and exact file text are read back after upload. The existing Mac schedule should be paused only after a successful hosted run.
+The list/pull operations read metadata and theme code. The push sends only the generated snapshot to the exact V2.5 theme, using the role captured at the start of the run. The read-only layout file gives the staging directory valid theme structure; it is not included in the push filter. No publication command, theme deletion or other theme ID can be selected. A published-role write is allowed only after the owner publishes this exact V2.5 theme; before that the CLI live-write flag is absent. The role and exact file text are read back after upload. The existing Mac schedule should be paused only after a successful hosted run.
 
 ## Verification and activation
 
 Run `npm test` locally. It uses synthetic fixtures and performs no Shopify authentication or writes. Complete credential setup, public-code approval and zero-spend verification, then enable Actions and run the workflow manually once. Its optional verify_write input performs a guarded identical-content write when today’s reference is already current, allowing write access and exact readback to be verified without changing prices. Scheduled runs never enable this input. Verify exact remote content and UNPUBLISHED status before treating the hosted schedule as active. Hosted checks passed; the first scheduled daily run is still a future execution, not yet observed.
+
+## Minimal publication-safe update
+
+This setup keeps one existing job, environment, schedule and credential. It uses the verified fixed website-pricing service at https://amevel-pricing.vercel.app. No Studio, DNS, Syncro or quotation change is involved. Each run captures the exact V2.5 role in its plan. Before publication only an unpublished-role push is allowed. After the owner publishes this exact theme, its published-role push adds the CLI live-write flag, still restricted to the one reference snippet and exact theme ID. Every role/content check, encrypted backup and exact readback remains mandatory. The former live theme ID is always rejected. A publication/rollback during a run aborts rather than changing its accepted role. Do not run a live-theme write as part of preview validation.
+
+Coordinate merging this update with the V2.5 pricing endpoint cutover, after verifying the new service. No extra production workflow or new Theme Access credential is required. The earlier two-workflow draft is superseded by this simpler approach. Fresh source checks and a manual no-quote reference refresh are required before claiming the hosted cutover complete.

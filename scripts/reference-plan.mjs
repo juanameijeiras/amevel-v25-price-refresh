@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 
 export const THEME='gid://shopify/OnlineStoreTheme/204653822279';
 export const SNAPSHOT='snippets/amevel-v25-ingredient-stored-reference.liquid';
-export const HOST='https://amevel-configurator-ba5bhz0sm-juan-ameijeiras-projects.vercel.app';
+export const HOST='https://amevel-pricing.vercel.app';
 export const REFERENCES=[['dairy','whole-milk'],['dairy','skim-milk'],['dairy','whey-powder'],['dairy','amf'],['cocoa-index','terranova-cocoa-powder'],['cocoa-index','evergrove-cocoa-powder'],['cocoa-index','sunridge-cocoa-powder'],['coffee','arabica-classic']];
 const DAY=86400000,sha=x=>createHash('sha256').update(x).digest('hex');
 const integer=n=>Number.isSafeInteger(n)&&n>0;
@@ -15,7 +15,7 @@ const dayOf=d=>d.toISOString().slice(0,10);
 const midnight=d=>Date.parse(dayOf(d)+'T00:00:00Z');
 const dayDate=s=>{if(typeof s!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(s))throw Error('invalid source date');const t=Date.parse(s+'T00:00:00Z');if(!Number.isFinite(t)||dayOf(new Date(t))!==s)throw Error('invalid source date');return t;};
 const assert=(yes,why)=>{if(!yes)throw Error(why);};
-export function ensureTheme(theme){assert(theme?.id===THEME&&theme.role==='UNPUBLISHED','Only unpublished V2.5 may be refreshed');assert(Array.isArray(theme.files?.nodes),'Missing fresh remote files');}
+export function ensureTheme(theme){assert(theme?.id===THEME&&['UNPUBLISHED','MAIN'].includes(theme.role),'Only the exact V2.5 theme may be refreshed');assert(Array.isArray(theme.files?.nodes),'Missing fresh remote files');}
 export function validateReference(family,product,data,now){
  assert(data?.product===product&&data.currency==='USD'&&data.packKg===1&&data.bags===1,'Mismatched reference identity or units');
  const checked=Date.parse(data.referenceCheckedAt);assert(Number.isFinite(checked)&&checked<=now.getTime()+60000&&dayOf(new Date(checked))===dayOf(now),'Reference was not checked today');
@@ -64,7 +64,7 @@ export function planRefresh(theme,responses,now=new Date()){
    after=after.replace(blockPattern,()=>block[1]+next);updated.push(key);
   }catch(error){retained.push({key,reason:String(error.message)});}
  }
- return{themeId:THEME,filename:SNAPSHOT,checkedAt:now.toISOString(),beforeSha256:sha(before),afterSha256:sha(after),changed:after!==before,updated,unchanged,retained,body:after};
+ return{themeId:THEME,themeRole:theme.role,filename:SNAPSHOT,checkedAt:now.toISOString(),beforeSha256:sha(before),afterSha256:sha(after),changed:after!==before,updated,unchanged,retained,body:after};
 }
 export async function fetchReferences(theme,fetcher=fetch){
  ensureTheme(theme);
