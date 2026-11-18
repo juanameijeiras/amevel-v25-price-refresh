@@ -1,4 +1,4 @@
-name: Refresh V2.5 ingredient references
+name: Refresh V2.5 stored price references
 on:
   schedule:
     - cron: '17 6 * * *'
@@ -19,7 +19,7 @@ jobs:
   refresh:
     if: github.ref == 'refs/heads/main' && github.repository == 'juanameijeiras/amevel-v25-price-refresh'
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
     environment: v25-refresh
     steps:
       - name: Check out trusted main
@@ -34,7 +34,7 @@ jobs:
         run: npm ci --ignore-scripts --no-audit --no-fund
       - name: Verify guards and calculations
         run: npm test
-      - name: Refresh only the exact V2.5 reference snapshot
+      - name: Refresh only the two exact V2.5 price snapshots
         run: npm run refresh
         env:
           SHOPIFY_CLI_THEME_TOKEN: ${{ secrets.SHOPIFY_CLI_THEME_TOKEN }}
